@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.spacetime</groupId>
 	<artifactId>spacetime</artifactId>
-	<packaging>ear</packaging>
+	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>spacetime</name>
 	<url>http://maven.apache.org</url>
@@ -20,6 +20,12 @@
 			<artifactId>javaee-api</artifactId>
 			<version>7.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.main.appclient</groupId>
+			<artifactId>gf-client</artifactId>
+			<version>4.1.1</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

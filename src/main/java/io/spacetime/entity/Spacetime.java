@@ -1,11 +1,12 @@
 package io.spacetime.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Random;
 
 import io.spacetime.util.Location;
 
-public class Spacetime {
+public class Spacetime implements Serializable {
 	private static final Location DEFAULT_LOCATION = new Location(0, 0);
 	
 	private int id;
@@ -49,5 +50,9 @@ public class Spacetime {
 		this.id = id;
 	}
 	
+	@Override
+	public String toString() {
+		return "Spacetime[" + this.location + ", " + this.date + "]"; 
+	}
 	
 }
