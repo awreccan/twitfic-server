@@ -8,7 +8,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import io.spacetime.entity.Spacetime;
-import io.spacetime.util.Location;
 
 @Stateless
 @LocalBean
@@ -28,8 +27,7 @@ public class SpacetimeDao {
 	public List<Spacetime> findAllSpacetimes() {
 		List<Spacetime> spacetimes = new ArrayList<Spacetime>();
 		spacetimes.add(new Spacetime());
-		spacetimes.add(new Spacetime(
-				new Location(3, 4), 
+		spacetimes.add(new Spacetime(0, 0,
 				new Date(System.currentTimeMillis() - 1000*60*60*24*7)));
 		return spacetimes;
 	}

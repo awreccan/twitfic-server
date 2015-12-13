@@ -9,7 +9,6 @@ import javax.ejb.Stateless;
 
 import io.spacetime.dao.SpacetimeDao;
 import io.spacetime.entity.Spacetime;
-import io.spacetime.util.Location;
 
 @Stateless
 public class SpacetimeServiceImpl implements SpacetimeServiceIntf {

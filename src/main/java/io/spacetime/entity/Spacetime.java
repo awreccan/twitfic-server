@@ -2,36 +2,60 @@ package io.spacetime.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Random;
 
-import io.spacetime.util.Location;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+@Entity
 public class Spacetime implements Serializable {
-	private static final Location DEFAULT_LOCATION = new Location(0, 0);
-	
+	private static final long serialVersionUID = 9179315299231136703L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
-	private Location location;
+	
+	private int latitude;
+	private int longitude;
+	
+	@Temporal(value=TemporalType.TIMESTAMP)
 	private Date date;
 	
-	private Random idGenerator;
-	
 	public Spacetime() {
-		this(DEFAULT_LOCATION, new Date());
+		this(0, 0, new Date());
 	}
 
-	public Spacetime(Location location, Date date){
-		this.idGenerator = new Random();
-		this.id = idGenerator.nextInt();
-		this.location = location;
+	public Spacetime(int latitude, int longitude, Date date){
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.date = date;
 	}
-
-	public Location getLocation() {
-		return location;
+	
+	@Override
+	public String toString() {
+		return "Spacetime [" + 
+				this.latitude + ", " + 
+				this.longitude + ", " + 
+				this.date + "]"; 
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public int getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(int latitude) {
+		this.latitude = latitude;
+	}
+
+	public int getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(int longitude) {
+		this.longitude = longitude;
 	}
 
 	public Date getDate() {
@@ -44,15 +68,6 @@ public class Spacetime implements Serializable {
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-	
-	@Override
-	public String toString() {
-		return "Spacetime[" + this.location + ", " + this.date + "]"; 
 	}
 	
 }
