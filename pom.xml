@@ -9,29 +9,113 @@
 	<url>http://maven.apache.org</url>
 	
 	<dependencies>
+		<!-- testing: junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- testing: arquillian for in-container tests -->
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- [useful for future] testing: shrinkwrap resolvers to create arquillian deployment using maven coordinates -->
+		<!--dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-depchain</artifactId>
+			<version>2.2.0</version>
+			<scope>test</scope>
+			<type>pom</type>
+		</dependency-->
+		<!-- testing: arquillian adapter for glassfish container -->
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-glassfish-embedded-3.1</artifactId>
+			<version>1.0.0.CR4</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- testing: embedded glassfish container runtime for arquillian -->
+		<!-- glassfish comes with derby (javadb) built in -->
+		<dependency>
+			<groupId>org.glassfish.main.extras</groupId>
+			<artifactId>glassfish-embedded-web</artifactId>
+			<version>4.1.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- java ee -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- app server: client -->
 		<dependency>
 			<groupId>org.glassfish.main.appclient</groupId>
 			<artifactId>gf-client</artifactId>
 			<version>4.1.1</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derbyclient</artifactId>
-			<version>10.12.1.1</version>
-			<scope>runtime</scope>
-		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- version 2.9+ for jira:SUREFIRE-743 bugfix -->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19</version>
+				<configuration>
+					<systemPropertyVariables>
+						<!-- pass the Java Logging configuration file to the forked
+						 Java process to get the SQL logging to work -->
+						<java.util.logging.config.file>
+							${project.build.testOutputDirectory}/logging.properties
+						</java.util.logging.config.file>
+						<!-- push derby log to build dir so it gets cleaned -->
+						<derby.stream.error.file>
+							${project.build.directory}/derby.log
+						</derby.stream.error.file>
+					</systemPropertyVariables>
+			</configuration>
+			</plugin>
+		</plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources-glassfish-embedded</directory>
+			</testResource>
+		</testResources>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<!-- [useful for future] testing: shrinkwrap resolver bom -->
+			<!--dependency>
+				<groupId>org.jboss.shrinkwrap.resolver</groupId>
+				<artifactId>shrinkwrap-resolver-bom</artifactId>
+				<version>2.2.0</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency-->
+			<!-- testing: arquillian bom -->
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>1.1.10.Final</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

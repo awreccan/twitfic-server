@@ -10,7 +10,7 @@ import io.spacetime.entity.Spacetime;
 public interface SpacetimeServiceIntf {
 	public Spacetime getSpacetime(int id);
 	public Spacetime setSpacetime(Spacetime spacetime);
-	public boolean removeSpacetime();
+	public boolean removeSpacetime(Spacetime spacetime);
 	
 	public List<Spacetime> getAllSpacetimes();
 }

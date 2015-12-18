@@ -1,7 +1,5 @@
 package io.spacetime.service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -18,7 +16,7 @@ public class SpacetimeServiceImpl implements SpacetimeServiceIntf {
 	
 	@Override
 	public Spacetime getSpacetime(int id) {
-		return dao.readSpacetime(id);
+		return dao.findSpacetimeById(id);
 	}
 
 	@Override
@@ -27,8 +25,14 @@ public class SpacetimeServiceImpl implements SpacetimeServiceIntf {
 	}
 
 	@Override
-	public boolean removeSpacetime() {
-		return dao.removeSpacetime();
+	public boolean removeSpacetime(Spacetime spacetime) {
+		try {
+			dao.removeSpacetime(spacetime);
+			return true;
+		}
+		catch (Exception e) { //FIXME
+			return false;
+		}
 	}
 
 	@Override
