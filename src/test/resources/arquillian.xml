@@ -9,6 +9,9 @@
             <property name="resourcesXml">
                 src/test/resources-glassfish-embedded/glassfish-resources.xml
             </property>
+            <!-- Override the default {HTTP: 8080, HTTPS: 8181} to allow
+            Arquillian tests to run while a Glassfish instance is already running -->
+            <property name="bindHttpPort">9999</property>
         </configuration>
     </container>
 </arquillian>

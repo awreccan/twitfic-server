@@ -2,40 +2,39 @@ package io.spacetime.service;
 
 import java.util.List;
 
-import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import io.spacetime.dao.SpacetimeDao;
 import io.spacetime.entity.Spacetime;
 
 @Stateless
-public class SpacetimeServiceImpl implements SpacetimeServiceIntf {
+@LocalBean
+public class SpacetimeService {
 
-	@EJB
+	@Inject
 	SpacetimeDao dao;
 	
-	@Override
 	public Spacetime getSpacetime(int id) {
 		return dao.findSpacetimeById(id);
 	}
 
-	@Override
 	public Spacetime setSpacetime(Spacetime spacetime) {
-		return dao.updateSpacetime(spacetime);
+		return dao.saveSpacetime(spacetime);
 	}
 
-	@Override
 	public boolean removeSpacetime(Spacetime spacetime) {
 		try {
 			dao.removeSpacetime(spacetime);
 			return true;
 		}
-		catch (Exception e) { //FIXME
+		catch (Exception e) {
+			// FIXME: specific exception? RuntimeException?
 			return false;
 		}
 	}
 
-	@Override
 	public List<Spacetime> getAllSpacetimes() {
 		return dao.findAllSpacetimes();
 	}

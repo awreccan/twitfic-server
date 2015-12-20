@@ -1,69 +1,60 @@
 package io.spacetime.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-import java.util.Random;
-
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.spacetime.base.BaseSpacetimeTest;
+import io.spacetime.dao.SpacetimeDao;
 import io.spacetime.entity.Spacetime;
 
 @RunWith(Arquillian.class)
-public class SpacetimeDaoTest {
+public class SpacetimeDaoTest extends BaseSpacetimeTest {
 
 	@Inject
 	SpacetimeDao dao;
 	
-	@PersistenceContext
-	EntityManager em;
-	
-	private static final int NUM_MILLIS_IN_A_DAY = 1000*60*60*24;
-	
-	@Deployment
-	public static JavaArchive createDeployment() {
-		JavaArchive archive = ShrinkWrap.create(JavaArchive.class);
+	@Test
+	public void testCreateReadDeleteSpacetime() {
+		// Create
+		Spacetime spacetime = new Spacetime(latitude, longitude, date);
+		assertTrue(spacetime.getId() == 0); // Java primitives are zero-initialized
+		Spacetime spacetimeJustPersisted = dao.saveSpacetime(spacetime);
+		assertEquals(spacetime, spacetimeJustPersisted);
 		
-		archive.addClasses(Spacetime.class, SpacetimeDao.class);
-		archive.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
-		// To enable CDI
-		archive.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+		// Read
+		spacetimeJustPersisted = dao.findSpacetimeById(spacetimeJustPersisted.getId());
+		assertEquals(spacetime, spacetimeJustPersisted);
 		
-		System.out.println(archive.toString(true));
-		
-		return archive;
+		// Delete
+		dao.removeSpacetime(spacetimeJustPersisted);
+		spacetimeJustPersisted = dao.findSpacetimeById(spacetimeJustPersisted.getId());
+		assertNull(spacetimeJustPersisted);
 	}
 	
 	@Test
-	public void testCreateAndDeleteSpacetime() {
-		Random random = new Random();
-		int latitude = random.nextInt();
-		int longitude = random.nextInt();
-		Date date = new Date(System.currentTimeMillis() + random.nextInt()*NUM_MILLIS_IN_A_DAY);
-		
+	public void testCreateUpdateDeleteSpacetime() {
+		// Create
 		Spacetime spacetime = new Spacetime(latitude, longitude, date);
 		assertTrue(spacetime.getId() == 0); // Java primitives are zero-initialized
-		
 		Spacetime spacetimeJustPersisted = dao.saveSpacetime(spacetime);
+		assertEquals(spacetime, spacetimeJustPersisted);
 		
-		spacetimeJustPersisted = dao.findSpacetimeById(spacetimeJustPersisted.getId());
+		// Update
+		spacetimeJustPersisted.setLatitude(1 + spacetimeJustPersisted.getLatitude());
+		spacetimeJustPersisted = dao.saveSpacetime(spacetimeJustPersisted);
+		spacetime.setLatitude(1 + spacetime.getLatitude());
+		assertEquals(spacetime, spacetimeJustPersisted);
 		
-		assertEquals(latitude, spacetimeJustPersisted.getLatitude());
-		assertEquals(longitude, spacetimeJustPersisted.getLongitude());
-		assertEquals(date, spacetimeJustPersisted.getDate());
-		
-		//Removing the Spacetime just created
+		// Delete
 		dao.removeSpacetime(spacetimeJustPersisted);
+		spacetimeJustPersisted = dao.findSpacetimeById(spacetimeJustPersisted.getId());
+		assertNull(spacetimeJustPersisted);
 	}
 }

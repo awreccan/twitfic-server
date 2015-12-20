@@ -41,6 +41,31 @@ public class Spacetime implements Serializable {
 				this.longitude + ", " + 
 				this.date + "]"; 
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (obj instanceof Spacetime) {
+			Spacetime stObj = (Spacetime) obj;
+			if (
+					stObj.getLatitude() == this.getLatitude() &&
+					stObj.getLongitude() == this.getLongitude() &&
+					stObj.getDate().equals(this.getDate())
+				)
+				return true;
+			else
+				return false;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (this.getLatitude() + this.getLongitude() + this.getDate().getTime());
+	}
 
 	public int getLatitude() {
 		return latitude;

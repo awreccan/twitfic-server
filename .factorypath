@@ -1,0 +1,10 @@
+<!--
+	If JPA metamodel generation does not work in Eclipse, run:
+		mvn dependency:get -Dartifact=org.hibernate:hibernate-jpamodelgen:5.0.6.Final
+		mvn dependency:get -Dartifact=org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final
+	and follow the procedure at http://arquillian.org/guides/testing_java_persistence/#write_the_test (Generating the JPA 2 Metamodel)
+-->
+<factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/hibernate/hibernate-jpamodelgen/5.0.6.Final/hibernate-jpamodelgen-5.0.6.Final.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>

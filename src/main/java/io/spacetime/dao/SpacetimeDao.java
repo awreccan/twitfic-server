@@ -1,48 +1,54 @@
 package io.spacetime.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import io.spacetime.entity.Spacetime;
+import io.spacetime.entity.Spacetime_;
 
 @Stateless
 @LocalBean
 public class SpacetimeDao {
+	
 	@PersistenceContext
 	EntityManager em;
 	
-	public Spacetime findSpacetimeById(int id) {//FIXME
-		return (Spacetime) em.createQuery(
-				"SELECT spacetime FROM Spacetime spacetime WHERE spacetime.id = :id")
-				.setParameter("id", id)
-				.getSingleResult();
-	}
-
-	public Spacetime updateSpacetime(Spacetime spacetime) {// FIXME
-		return null;
-	}
-
-	public Spacetime saveSpacetime(int latitude, int longitude, Date date) {//FIXME
-		Spacetime newSpacetime = new Spacetime(latitude, longitude, date);
-		return this.saveSpacetime(newSpacetime);
-	}
-	
-	public Spacetime saveSpacetime(Spacetime spacetime) {
-		em.persist(spacetime);
+	public Spacetime findSpacetimeById(int id) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Spacetime> query = builder.createQuery(Spacetime.class);
+		Root<Spacetime> root = query.from(Spacetime.class);
+		query.where(builder.equal(root.get(Spacetime_.id), id));
+		Spacetime spacetime = null;
+		try {
+			spacetime = em.createQuery(query).getSingleResult();
+		} catch (NoResultException e) {}
 		return spacetime;
 	}
 
+	public Spacetime saveSpacetime(int latitude, int longitude, Date date) {
+		Spacetime newSpacetime = new Spacetime(latitude, longitude, date);
+		em.persist(newSpacetime);
+		return newSpacetime;
+	}
+	
+	public Spacetime saveSpacetime(Spacetime spacetime) {
+		return em.merge(spacetime);
+	}
+
 	public List<Spacetime> findAllSpacetimes() {
-		List<Spacetime> spacetimes = new ArrayList<Spacetime>();
-		spacetimes.add(new Spacetime());
-		spacetimes.add(new Spacetime(0, 0,
-				new Date(System.currentTimeMillis() - 1000*60*60*24*7)));
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Spacetime> query = builder.createQuery(Spacetime.class);
+		query.from(Spacetime.class);
+		List<Spacetime> spacetimes = em.createQuery(query).getResultList();
 		return spacetimes;
 	}
 
@@ -54,6 +60,8 @@ public class SpacetimeDao {
 	}
 	
 	public void removeSpacetimeById(int id) {
-		em.remove(this.findSpacetimeById(id));
+		Spacetime spacetime = this.findSpacetimeById(id);
+		if (spacetime != null)
+			em.remove(spacetime);
 	}
 }
