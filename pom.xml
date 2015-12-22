@@ -62,14 +62,39 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- compile with Java SE 8 -->
+			<!--disable annotation processing for compiler plugin, and-->
+			<!--replace with annotation processing from processor plugin with metamodel annotation processing.-->
+			<!--this is done to bypass annotation processing errors in maven compiler v2.5.1+-->
+			<!--alternative is to simply use maven-compiler-plugin v2.5.1 and remove maven-processor-plugin-->
+			<!--https://github.com/mkarneim/pojobuilder/wiki/Incremental-Compilation-and-Maven-->
 			<plugin>
+				<!-- compile with Java SE 8 -->
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>2.2.4</version>
+				<executions>
+					<execution>
+						<id>hibernate-jpa-metamodel</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<processors>
+								<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+							</processors>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- version 2.9+ for bugfix: jira.codehaus.org/browse/SUREFIRE-743 -->
 			<plugin>
