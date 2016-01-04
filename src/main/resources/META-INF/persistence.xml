@@ -3,13 +3,13 @@
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 	
 	<persistence-unit name="TwitFicDB" transaction-type="JTA">
-	<jta-data-source>jdbc/__default</jta-data-source>
-   
-	<properties>		      	      
-		<property name="eclipselink.logging.level" value="FINE" /> 
-		<property name="eclipselink.ddl-generation" value="create-tables" />
-		<property name="eclipselink.ddl-generation.output-mode" value="database" />
-	</properties>
+		<jta-data-source>jdbc/__default</jta-data-source>
+
+		<properties>
+			<property name="eclipselink.logging.level" value="FINE" />
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.ddl-generation.output-mode" value="database" />
+		</properties>
          
    </persistence-unit>
 </persistence>

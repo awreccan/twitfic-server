@@ -1,14 +1,17 @@
 package io.twitfic.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 @Entity
 public class Story implements Serializable {
@@ -18,77 +21,57 @@ public class Story implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	private int latitude;
-	private int longitude;
+	@OneToMany(mappedBy="story", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	private List<Account> accounts;
 	
-	@Temporal(value=TemporalType.TIMESTAMP)
-	private Date date;
+	@OneToMany(mappedBy="story", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OrderBy("time DESC")
+	private List<Tweet> tweets;
 	
-	public Story() {
-		this(0, 0, new Date());
-	}
+	public Story() {}
 
-	public Story(int latitude, int longitude, Date date){
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.date = date;
+	public Story(List<Account> accounts, List<Tweet> tweets){
+		this.accounts = accounts;
+		this.tweets = tweets;
 	}
 	
 	@Override
 	public String toString() {
 		return "Story [" + 
-				this.latitude + ", " + 
-				this.longitude + ", " + 
-				this.date + "]"; 
+				this.accounts + ", " + 
+				this.tweets + "]"; 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
 		if (obj instanceof Story) {
 			Story stObj = (Story) obj;
-			if (
-					stObj.getLatitude() == this.getLatitude() &&
-					stObj.getLongitude() == this.getLongitude() &&
-					stObj.getDate().equals(this.getDate())
-				)
-				return true;
-			else
-				return false;
+			return 
+					Objects.equals(stObj.getAccounts(), this.getAccounts()) &&
+					Objects.equals(stObj.getTweets(), this.getTweets());
 		}
-		else {
-			return false;
-		}
+		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return (int) (this.getLatitude() + this.getLongitude() + this.getDate().getTime());
+		return Objects.hash(this.getAccounts(), this.getTweets());
 	}
 
-	public int getLatitude() {
-		return latitude;
+	public List<Account> getAccounts() {
+		return accounts;
 	}
 
-	public void setLatitude(int latitude) {
-		this.latitude = latitude;
+	public void setAccounts(List<Account> accounts) {
+		this.accounts = accounts;
 	}
 
-	public int getLongitude() {
-		return longitude;
+	public List<Tweet> getTweets() {
+		return tweets;
 	}
 
-	public void setLongitude(int longitude) {
-		this.longitude = longitude;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
+	public void setTweets(List<Tweet> tweets) {
+		this.tweets = tweets;
 	}
 
 	public int getId() {

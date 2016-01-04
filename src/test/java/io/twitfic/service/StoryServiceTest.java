@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import java.util.Random;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.junit.Arquillian;
@@ -12,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import io.twitfic.base.BaseTwitficTest;
 import io.twitfic.entity.Story;
+import io.twitfic.entity.Tweet;
 import io.twitfic.service.StoryService;
 
 @RunWith(Arquillian.class)
@@ -23,7 +27,7 @@ public class StoryServiceTest extends BaseTwitficTest {
 	@Test
 	public void testCreateReadDelete() {
 		// Create
-		Story story = new Story(latitude, longitude, date);
+		Story story = new Story(accounts, tweets);
 		assertTrue(story.getId() == 0); // Java primitives are zero-initialized
 		Story storyJustCreated = service.setStory(story);
 		assertEquals(story, storyJustCreated);
@@ -41,15 +45,16 @@ public class StoryServiceTest extends BaseTwitficTest {
 	@Test
 	public void testCreateUpdateDelete() {
 		// Create
-		Story story = new Story(latitude, longitude, date);
+		Story story = new Story(accounts, tweets);
 		assertTrue(story.getId() == 0); // Java primitives are zero-initialized
 		Story storyJustCreated = service.setStory(story);
 		assertEquals(story, storyJustCreated);
 		
 		// Update
-		storyJustCreated.setLatitude(1 + storyJustCreated.getLatitude());
+		List<Tweet> tmpTweets = generateRandomTweets(new Random(), accounts.size(), accounts.size());
+		storyJustCreated.setTweets(tmpTweets);
 		storyJustCreated = service.setStory(storyJustCreated);
-		story.setLatitude(1 + story.getLatitude());
+		story.setTweets(tmpTweets);
 		assertEquals(story, storyJustCreated);
 		
 		// Delete
