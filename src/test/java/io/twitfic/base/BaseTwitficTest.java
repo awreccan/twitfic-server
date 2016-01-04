@@ -1,4 +1,4 @@
-package io.spacetime.base;
+package io.twitfic.base;
 
 import java.util.Date;
 import java.util.Random;
@@ -9,11 +9,11 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Before;
 
-import io.spacetime.dao.SpacetimeDao;
-import io.spacetime.entity.Spacetime;
-import io.spacetime.service.SpacetimeService;
+import io.twitfic.dao.StoryDao;
+import io.twitfic.entity.Story;
+import io.twitfic.service.StoryService;
 
-public class BaseSpacetimeTest {
+public class BaseTwitficTest {
 	protected static final int NUM_MILLIS_IN_A_DAY = 1000*60*60*24;
 	protected static int latitude;
 	protected static int longitude;
@@ -23,8 +23,8 @@ public class BaseSpacetimeTest {
 	public static JavaArchive createDeployment() {
 		JavaArchive archive = ShrinkWrap.create(JavaArchive.class);
 		
-		archive.addClasses(Spacetime.class, SpacetimeDao.class,
-				SpacetimeService.class);
+		archive.addClasses(Story.class, StoryDao.class,
+				StoryService.class);
 		archive.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
 		// To enable CDI
 		archive.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");

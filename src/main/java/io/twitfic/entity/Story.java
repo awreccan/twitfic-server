@@ -1,4 +1,4 @@
-package io.spacetime.entity;
+package io.twitfic.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public class Spacetime implements Serializable {
+public class Story implements Serializable {
 	private static final long serialVersionUID = 9179315299231136703L;
 
 	@Id
@@ -24,11 +24,11 @@ public class Spacetime implements Serializable {
 	@Temporal(value=TemporalType.TIMESTAMP)
 	private Date date;
 	
-	public Spacetime() {
+	public Story() {
 		this(0, 0, new Date());
 	}
 
-	public Spacetime(int latitude, int longitude, Date date){
+	public Story(int latitude, int longitude, Date date){
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.date = date;
@@ -36,7 +36,7 @@ public class Spacetime implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Spacetime [" + 
+		return "Story [" + 
 				this.latitude + ", " + 
 				this.longitude + ", " + 
 				this.date + "]"; 
@@ -46,8 +46,8 @@ public class Spacetime implements Serializable {
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
-		if (obj instanceof Spacetime) {
-			Spacetime stObj = (Spacetime) obj;
+		if (obj instanceof Story) {
+			Story stObj = (Story) obj;
 			if (
 					stObj.getLatitude() == this.getLatitude() &&
 					stObj.getLongitude() == this.getLongitude() &&
