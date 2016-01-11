@@ -13,7 +13,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class Tweet implements Serializable {
 	private static final long serialVersionUID = -6614777061913809713L;
@@ -22,62 +30,64 @@ public class Tweet implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	@ManyToOne
-	@JoinColumn
-	private Account author;
-	
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyy-MM-dd'T'HH:mm:ss")
 	private Date time;
 	
 	@Size(min = 1, max = 140)
 	private String content;
 	
+	@XmlTransient @JsonIgnore
 	@ManyToOne
-	@JoinColumn
-	private Story story;
+	@JoinColumn(nullable=false)
+	private Account account;
 	
 	public Tweet() {}
 
-	public Tweet(Account author, Date time, String content) {
-		this.author = author;
-		this.time = time;
-		this.content = content;
-		
-		// Accounts keep track of their Tweets to allow for cascading while deleting an Account
-		author.getTweets().add(this);
+	public Tweet(Date time, String content) {
+		this.setTime(time);
+		this.setContent(content);
 	}
 	
 	@Override
 	public String toString() {
-		return "Tweet [" + 
-				this.author + ", " +
+		return "Tweet (" + 
 				this.time + ", " +
-				this.content + "]"; 
+				this.content + ")"; 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Tweet) {
-			Tweet stObj = (Tweet) obj;
-			return 
-					Objects.equals(stObj.getAuthor(), this.getAuthor()) &&
-					Objects.equals(stObj.getTime(), this.getTime()) &&
-					Objects.equals(stObj.getContent(), this.getContent());
+			Tweet tweet = (Tweet) obj;
+			System.out.print(tweet.getTime().getTime());
+			System.out.print(" ");
+			System.out.print(tweet.getTime().toInstant().getNano()/1000000);
+			System.out.print(" ");
+			System.out.print(this.getTime().getTime());
+			System.out.print(" ");
+			System.out.println(this.getTime().toInstant().getNano()/1000000);
+			return
+					// Time comparison will be done to only second precision because there are
+					// parsing problems introduced when the milliseconds field length < 3 digits
+					Objects.equals(tweet.getTime().getTime()/1000, this.getTime().getTime()/1000) &&
+//					Objects.equals(tweet.getTime(), this.getTime()) &&
+					Objects.equals(tweet.getContent(), this.getContent());
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getAuthor(), this.getTime(), this.getContent());
+		return Objects.hash(this.getTime(), this.getContent());
 	}
 
-	public Account getAuthor() {
-		return author;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setAuthor(Account author) {
-		this.author = author;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public Date getTime() {
@@ -99,5 +109,4 @@ public class Tweet implements Serializable {
 	public int getId() {
 		return id;
 	}
-
 }

@@ -3,12 +3,36 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.twitfic</groupId>
 	<artifactId>twitfic-server</artifactId>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>twitfic-server</name>
 	<url>http://maven.apache.org</url>
 	
 	<dependencies>
+		<!-- PROVIDED SCOPE -->
+		<!-- java ee -->
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- jpa metamodel generation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<version>5.0.6.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- jaxrs json provider: jackson2 (overrides glassfish's jaxb) -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.7.0-rc3</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- TEST SCOPE -->
 		<!-- testing: junit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -22,14 +46,6 @@
 			<artifactId>arquillian-junit-container</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- [useful for future] testing: shrinkwrap resolvers to create arquillian deployment using maven coordinates -->
-		<!--dependency>
-			<groupId>org.jboss.shrinkwrap.resolver</groupId>
-			<artifactId>shrinkwrap-resolver-depchain</artifactId>
-			<version>2.2.0</version>
-			<scope>test</scope>
-			<type>pom</type>
-		</dependency-->
 		<!-- testing: arquillian adapter for glassfish container -->
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
@@ -45,21 +61,44 @@
 			<version>4.1.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- java ee -->
+		<!-- testing: shrinkwrap resolvers to create arquillian deployment using maven coordinates -->
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
-			<scope>provided</scope>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-depchain</artifactId>
+			<version>2.2.1</version>
+			<scope>test</scope>
+			<type>pom</type>
 		</dependency>
-		<!-- jpa metamodel generation -->
+		<!-- testing: rest-assured for arquillian jaxrs testing -->
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-jpamodelgen</artifactId>
-			<version>5.0.6.Final</version>
-			<scope>provided</scope>
+			<groupId>com.jayway.restassured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>2.8.0</version>
+			<scope>test</scope>
 		</dependency>
+		<!-- testing: arquillian rest client extension with resteasy 3.x-->
+		<!-- <dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-rest-client-api</artifactId>
+			<version>1.0.0.Alpha4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-rest-client-impl-3x</artifactId>
+			<version>1.0.0.Alpha4</version>
+			<scope>test</scope>
+		</dependency> -->
+		<!-- testing: marshaller  -->
+		<!-- <dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson2-provider</artifactId>
+			<version>3.0.14.Final</version>
+			<scope>compile</scope>
+		</dependency> -->
+
 	</dependencies>
+	
 	<build>
 		<plugins>
 			<!--disable annotation processing for compiler plugin, and-->
@@ -114,7 +153,16 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
+			<!-- no need for a web.xml -->
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
 		</plugins>
+		
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
@@ -124,16 +172,17 @@
 			</testResource>
 		</testResources>
 	</build>
+	
 	<dependencyManagement>
 		<dependencies>
-			<!-- [useful for future] testing: shrinkwrap resolver bom -->
-			<!--dependency>
+			<!-- testing: shrinkwrap resolver bom -->
+			<dependency>
 				<groupId>org.jboss.shrinkwrap.resolver</groupId>
 				<artifactId>shrinkwrap-resolver-bom</artifactId>
-				<version>2.2.0</version>
+				<version>2.2.1</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency-->
+			</dependency>
 			<!-- testing: arquillian bom -->
 			<dependency>
 				<groupId>org.jboss.arquillian</groupId>

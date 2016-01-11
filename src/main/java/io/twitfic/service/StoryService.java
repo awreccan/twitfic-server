@@ -20,8 +20,18 @@ public class StoryService {
 		return dao.findStoryById(id);
 	}
 
+	public List<Story> getAllStories() {
+		return dao.findAllStories();
+	}
+
 	public Story setStory(Story story) {
 		return dao.saveStory(story);
+	}
+
+	public Story setStoryById(int id, Story story) {
+		Story existingStory = dao.findStoryById(id);
+		existingStory.setAccounts(story.getAccounts());
+		return dao.saveStory(existingStory);
 	}
 
 	public boolean removeStory(Story story) {
@@ -35,8 +45,8 @@ public class StoryService {
 		}
 	}
 
-	public List<Story> getAllStories() {
-		return dao.findAllStories();
+	public void deleteStoryById(int id) {
+		dao.removeStoryById(id);
 	}
 
 }

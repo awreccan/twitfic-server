@@ -11,8 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class Story implements Serializable {
 	private static final long serialVersionUID = 9179315299231136703L;
@@ -21,41 +25,32 @@ public class Story implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	@OneToMany(mappedBy="story", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="story", fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<Account> accounts;
-	
-	@OneToMany(mappedBy="story", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@OrderBy("time DESC")
-	private List<Tweet> tweets;
 	
 	public Story() {}
 
-	public Story(List<Account> accounts, List<Tweet> tweets){
-		this.accounts = accounts;
-		this.tweets = tweets;
+	public Story(List<Account> accounts){
+		this.setAccounts(accounts);
 	}
 	
 	@Override
 	public String toString() {
-		return "Story [" + 
-				this.accounts + ", " + 
-				this.tweets + "]"; 
+		return "Story: " + this.accounts; 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Story) {
-			Story stObj = (Story) obj;
-			return 
-					Objects.equals(stObj.getAccounts(), this.getAccounts()) &&
-					Objects.equals(stObj.getTweets(), this.getTweets());
+			Story story = (Story) obj;
+			return Objects.equals(story.getAccounts(), this.getAccounts());
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getAccounts(), this.getTweets());
+		return Objects.hash(this.getAccounts());
 	}
 
 	public List<Account> getAccounts() {
@@ -63,15 +58,9 @@ public class Story implements Serializable {
 	}
 
 	public void setAccounts(List<Account> accounts) {
+		for (Account account : accounts)
+			account.setStory(this);
 		this.accounts = accounts;
-	}
-
-	public List<Tweet> getTweets() {
-		return tweets;
-	}
-
-	public void setTweets(List<Tweet> tweets) {
-		this.tweets = tweets;
 	}
 
 	public int getId() {

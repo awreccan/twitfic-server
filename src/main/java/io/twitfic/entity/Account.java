@@ -1,7 +1,6 @@
 package io.twitfic.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,7 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class Account implements Serializable {
 	private static final long serialVersionUID = -3214789815075877279L;
@@ -21,42 +26,45 @@ public class Account implements Serializable {
 	private String handle;
 	private String name;
 	
-	@ManyToOne
-	@JoinColumn
-	private Story story;
-	
-	@OneToMany(mappedBy="author", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy="account", fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<Tweet> tweets;
+	
+	@XmlTransient @JsonIgnore
+	@ManyToOne
+	@JoinColumn(nullable=false)
+	private Story story;
 	
 	public Account() {}
 
-	public Account(String handle, String name){
-		this.handle = handle;
-		this.name = name;
-		tweets = new ArrayList<Tweet>();
+	public Account(String handle, String name, List<Tweet> tweets){
+		this.setHandle(handle);
+		this.setName(name);
+		this.setTweets(tweets);
 	}
 	
 	@Override
 	public String toString() {
-		return "Account [" + 
+		return "Account {" + 
 				this.handle + ", " + 
-				this.name + "]"; 
+				this.name + ", " + 
+				this.tweets + "}"; 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Account) {
-			Account stObj = (Account) obj;
+			Account account = (Account) obj;
 			return 
-					Objects.equals(stObj.getHandle(), this.getHandle()) &&
-					Objects.equals(stObj.getName(), this.getName());
+					Objects.equals(account.getHandle(), this.getHandle()) &&
+					Objects.equals(account.getName(), this.getName()) &&
+					Objects.equals(account.getTweets(), this.getTweets());
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getHandle(), this.getName());
+		return Objects.hash(this.getHandle(), this.getName(), this.getTweets());
 	}
 
 	public String getHandle() {
@@ -76,12 +84,21 @@ public class Account implements Serializable {
 	}
 
 	public List<Tweet> getTweets() {
-		// TODO: replace with defensive copy and add tweets modification methods
 		return tweets;
 	}
 
 	public void setTweets(List<Tweet> tweets) {
 		this.tweets = tweets;
+		for (Tweet tweet : tweets)
+			tweet.setAccount(this);
+	}
+
+	public Story getStory() {
+		return story;
+	}
+
+	public void setStory(Story story) {
+		this.story = story;
 	}
 	
 }
