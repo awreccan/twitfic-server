@@ -20,6 +20,10 @@ public class StoryService {
 		return dao.findStoryById(id);
 	}
 
+	public List<Story> getAllStories() {
+		return dao.findAllStories();
+	}
+
 	public Story setStory(Story story) {
 		return dao.saveStory(story);
 	}
@@ -35,8 +39,8 @@ public class StoryService {
 		}
 	}
 
-	public List<Story> getAllStories() {
-		return dao.findAllStories();
+	public void deleteStoryById(int id) {
+		dao.removeStoryById(id);
 	}
 
 }

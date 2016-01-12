@@ -43,13 +43,41 @@ public class StoryDao {
 		return stories;
 	}
 
-	public Story saveStory(List<Account> accounts, List<Tweet> tweets) {
-		Story newStory = new Story(accounts, tweets);
+	// TODO: move to Account DAO
+	public List<Account> findAllAccounts() {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Account> query = builder.createQuery(Account.class);
+		query.from(Account.class);
+		List<Account> accounts = em.createQuery(query).getResultList();
+		return accounts;
+	}
+
+	// TODO: move to Tweet DAO
+	public List<Tweet> findAllTweets() {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Tweet> query = builder.createQuery(Tweet.class);
+		query.from(Tweet.class);
+		List<Tweet> tweets = em.createQuery(query).getResultList();
+		return tweets;
+	}
+
+	public Story saveStory(List<Tweet> tweets) {
+		Story newStory = new Story(tweets);
 		em.persist(newStory);
 		return newStory;
 	}
 	
 	public Story saveStory(Story story) {
+		// Establish @ManyToOne foreign-key relationships
+		for (Tweet tweet : story.getTweets()) {
+			tweet.setStory(story);
+			tweet.getAccount().setStory(story);
+			tweet.getAccount().addTweet(tweet);
+		}
+		for (Account account : story.getAccounts()) {
+			account.setStory(story);
+		}
+		
 		return em.merge(story);
 	}
 

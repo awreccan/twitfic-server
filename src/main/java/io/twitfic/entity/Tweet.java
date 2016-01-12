@@ -13,7 +13,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class Tweet implements Serializable {
 	private static final long serialVersionUID = -6614777061913809713L;
@@ -22,62 +29,76 @@ public class Tweet implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	@ManyToOne
-	@JoinColumn
-	private Account author;
-	
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyy-MM-dd'T'HH:mm:ss")
 	private Date time;
 	
 	@Size(min = 1, max = 140)
 	private String content;
 	
+	@XmlIDREF
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(nullable=false)
+	private Account account;
+
+	@XmlTransient
+	@ManyToOne
+	@JoinColumn(nullable=false)
 	private Story story;
 	
 	public Tweet() {}
 
-	public Tweet(Account author, Date time, String content) {
-		this.author = author;
-		this.time = time;
-		this.content = content;
-		
-		// Accounts keep track of their Tweets to allow for cascading while deleting an Account
-		author.getTweets().add(this);
+	public Tweet(Date time, String content, Account account) {
+		this.setTime(time);
+		this.setContent(content);
+		this.setAccount(account);
 	}
 	
 	@Override
 	public String toString() {
-		return "Tweet [" + 
-				this.author + ", " +
-				this.time + ", " +
-				this.content + "]"; 
+		return "Tweet {" + 
+					this.time + ", " +
+					this.content + ", " +
+					this.account + 
+				"}"; 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Tweet) {
-			Tweet stObj = (Tweet) obj;
-			return 
-					Objects.equals(stObj.getAuthor(), this.getAuthor()) &&
-					Objects.equals(stObj.getTime(), this.getTime()) &&
-					Objects.equals(stObj.getContent(), this.getContent());
+			Tweet tweet = (Tweet) obj;
+			return
+					// Time comparison will be done to only second precision because there are
+					// parsing problems introduced when the milliseconds field length < 3 digits
+					Objects.equals(tweet.getTime().getTime()/1000, this.getTime().getTime()/1000) &&
+					Objects.equals(tweet.getContent(), this.getContent()) &&
+					Objects.equals(tweet.getAccount(), this.getAccount());
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getAuthor(), this.getTime(), this.getContent());
+		return Objects.hash(this.getTime(), this.getContent(), this.getAccount());
 	}
 
-	public Account getAuthor() {
-		return author;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setAuthor(Account author) {
-		this.author = author;
+	public void setAccount(Account account) {
+		// Sanitise
+		account.addTweet(this);
+		
+		this.account = account;
+	}
+
+	public Story getStory() {
+		return story;
+	}
+
+	public void setStory(Story story) {
+		this.story = story;
 	}
 
 	public Date getTime() {
@@ -99,5 +120,4 @@ public class Tweet implements Serializable {
 	public int getId() {
 		return id;
 	}
-
 }
